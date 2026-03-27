@@ -40,6 +40,7 @@ export function AppShell({ activeTab, onTabChange, children }: Props) {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
       }}
     >
       {/* Connection status bar */}
