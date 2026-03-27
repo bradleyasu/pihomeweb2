@@ -3,23 +3,53 @@
  *
  * Connects to the PiHome websocket, sends periodic status requests,
  * and exposes a `sendPayload` function for sending arbitrary messages.
+ *
+ * Persists the last known status to localStorage so the app can
+ * render a cached view when the PiHome device is unreachable
+ * (e.g. phone is off the home network).
  */
 import { useEffect, useRef, useCallback, useState } from 'react';
 import type { PiHomeStatus, EventPayload } from '../types/index.ts';
 import { getWsUrl, STATUS_POLL_INTERVAL, WS_RECONNECT_DELAY } from '../constants.ts';
 
+const CACHE_KEY = 'pihome:last-status';
+
+/** Read cached status from localStorage */
+function loadCachedStatus(): PiHomeStatus | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed?.type === 'status' ? (parsed as PiHomeStatus) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Persist status to localStorage */
+function cacheStatus(status: PiHomeStatus): void {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(status));
+  } catch {
+    // Storage full or unavailable — ignore
+  }
+}
+
 interface UseSocketReturn {
-  /** Latest status received from the server */
+  /** Latest status received from the server (or cached if offline) */
   status: PiHomeStatus | null;
   /** Whether the websocket is currently connected */
   online: boolean;
+  /** Whether the current status is from cache (stale) */
+  stale: boolean;
   /** Send an arbitrary JSON payload over the websocket */
   sendPayload: (payload: EventPayload) => void;
 }
 
 export function useSocket(): UseSocketReturn {
-  const [status, setStatus] = useState<PiHomeStatus | null>(null);
+  const [status, setStatus] = useState<PiHomeStatus | null>(loadCachedStatus);
   const [online, setOnline] = useState(false);
+  const [stale, setStale] = useState(true);
   const wsRef = useRef<WebSocket | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const reconnectRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -56,7 +86,10 @@ export function useSocket(): UseSocketReturn {
         try {
           const data = JSON.parse(event.data);
           if (data.type === 'status') {
-            setStatus(data as PiHomeStatus);
+            const s = data as PiHomeStatus;
+            setStatus(s);
+            setStale(false);
+            cacheStatus(s);
           }
         } catch {
           // Ignore non-JSON messages
@@ -87,5 +120,5 @@ export function useSocket(): UseSocketReturn {
     };
   }, []);
 
-  return { status, online, sendPayload };
+  return { status, online, stale, sendPayload };
 }

@@ -5,14 +5,13 @@
  * The bottom nav uses a pill-style active indicator with smooth transitions.
  */
 import { type ReactNode } from 'react';
-import { Box, Group, Stack, Text, UnstyledButton, Indicator } from '@mantine/core';
+import { Box, Group, Text, UnstyledButton } from '@mantine/core';
 import {
   IconHome,
   IconChecklist,
   IconHourglass,
   IconBolt,
   IconSettings,
-  IconWifi,
   IconWifiOff,
 } from '@tabler/icons-react';
 import type { TabId } from '../../App.tsx';
@@ -33,7 +32,7 @@ const tabs: { id: TabId; label: string; icon: typeof IconHome }[] = [
 ];
 
 export function AppShell({ activeTab, onTabChange, children }: Props) {
-  const { online } = usePiHome();
+  const { online, stale } = usePiHome();
 
   return (
     <Box
@@ -43,20 +42,25 @@ export function AppShell({ activeTab, onTabChange, children }: Props) {
         height: '100%',
       }}
     >
-      {/* Connection status bar — only shown when offline */}
+      {/* Connection status bar */}
       {!online && (
         <Box
           py={6}
           px="md"
           style={{
-            background: 'rgba(255, 107, 107, 0.15)',
-            borderBottom: '1px solid rgba(255, 107, 107, 0.3)',
+            background: stale
+              ? 'rgba(255, 180, 50, 0.12)'
+              : 'rgba(255, 107, 107, 0.15)',
+            borderBottom: stale
+              ? '1px solid rgba(255, 180, 50, 0.25)'
+              : '1px solid rgba(255, 107, 107, 0.3)',
+            flexShrink: 0,
           }}
         >
           <Group gap={6} justify="center">
-            <IconWifiOff size={14} color="var(--ph-red)" />
-            <Text size="xs" c="var(--ph-red)" fw={500}>
-              Disconnected — reconnecting...
+            <IconWifiOff size={14} color={stale ? '#ffb432' : 'var(--ph-red)'} />
+            <Text size="xs" c={stale ? '#ffb432' : 'var(--ph-red)'} fw={500}>
+              {stale ? 'Offline — showing last known state' : 'Disconnected — reconnecting...'}
             </Text>
           </Group>
         </Box>

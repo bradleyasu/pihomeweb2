@@ -5,7 +5,7 @@
  * within a mobile-first shell with bottom navigation.
  */
 import { useState, useCallback } from 'react';
-import { Box, Transition } from '@mantine/core';
+import { Box } from '@mantine/core';
 import { AppShell } from './components/Layout/AppShell.tsx';
 import { Home } from './pages/Home.tsx';
 import { Tasks } from './pages/Tasks.tsx';
