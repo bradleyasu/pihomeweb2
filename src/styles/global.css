@@ -1,0 +1,69 @@
+/*
+ * PiHome global styles.
+ */
+
+:root {
+  --ph-bg: #0a0a12;
+  --ph-surface: rgba(30, 30, 46, 0.6);
+  --ph-surface-solid: #1e1e2e;
+  --ph-border: rgba(255, 255, 255, 0.06);
+  --ph-accent: #e34a6f;
+  --ph-accent-dim: rgba(227, 74, 111, 0.15);
+  --ph-text: #e8e8ec;
+  --ph-text-dim: #9e9eab;
+  --ph-blue: #4dabf7;
+  --ph-green: #51cf66;
+  --ph-red: #ff6b6b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--ph-bg);
+  color: var(--ph-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+body {
+  overscroll-behavior: none;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 2px; }
+
+.glass {
+  background: var(--ph-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--ph-border);
+  border-radius: var(--mantine-radius-lg, 12px);
+}
+
+.glow-accent {
+  box-shadow: 0 0 20px rgba(227, 74, 111, 0.15), 0 0 60px rgba(227, 74, 111, 0.05);
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-enter { animation: fadeSlideUp 0.3s ease-out; }
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.pulse { animation: pulse 2s ease-in-out infinite; }
