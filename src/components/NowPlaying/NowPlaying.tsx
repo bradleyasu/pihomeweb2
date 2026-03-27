@@ -5,8 +5,9 @@
  * Displays album art, track title, artist, and album with
  * a subtle glow effect and animated equalizer bars.
  */
+import { useState } from 'react';
 import { Card, Group, Stack, Text, Image, Box } from '@mantine/core';
-import { IconMusic, IconPlayerPlay } from '@tabler/icons-react';
+import { IconMusic } from '@tabler/icons-react';
 import type { NowPlayingStatus } from '../../types/index.ts';
 import { getApiBaseUrl } from '../../constants.ts';
 
@@ -40,10 +41,12 @@ function EqualizerBars() {
 }
 
 export function NowPlaying({ nowPlaying }: Props) {
+  const [artFailed, setArtFailed] = useState(false);
+
   if (!nowPlaying.is_playing || !nowPlaying.title) return null;
 
-  const artworkUrl = nowPlaying.has_artwork
-    ? `${getApiBaseUrl()}/airplay/artwork?t=${Date.now()}`
+  const artworkUrl = nowPlaying.has_artwork && !artFailed
+    ? `${getApiBaseUrl()}/airplay/artwork`
     : null;
 
   return (
@@ -71,7 +74,13 @@ export function NowPlaying({ nowPlaying }: Props) {
           }}
         >
           {artworkUrl ? (
-            <Image src={artworkUrl} w={56} h={56} fit="cover" />
+            <Image
+              src={artworkUrl}
+              w={56}
+              h={56}
+              fit="cover"
+              onError={() => setArtFailed(true)}
+            />
           ) : (
             <IconMusic size={28} color="var(--ph-accent)" stroke={1.5} />
           )}
