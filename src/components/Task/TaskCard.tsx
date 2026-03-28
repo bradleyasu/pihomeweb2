@@ -22,11 +22,11 @@ interface Props {
   onDelete?: (id: string) => void;
 }
 
-/** Priority color for the left accent strip */
-const priorityColor: Record<number, string> = {
-  1: 'var(--ph-blue)',
-  2: '#f0a030',
-  3: 'var(--ph-red)',
+/** Priority color palette for accent theming */
+const priorityAccent: Record<number, { color: string; bg: string; border: string }> = {
+  1: { color: 'var(--ph-blue)', bg: 'rgba(74, 144, 226, 0.06)', border: 'rgba(74, 144, 226, 0.18)' },
+  2: { color: '#f0a030', bg: 'rgba(240, 160, 48, 0.06)', border: 'rgba(240, 160, 48, 0.18)' },
+  3: { color: 'var(--ph-red)', bg: 'rgba(255, 107, 107, 0.08)', border: 'rgba(255, 107, 107, 0.2)' },
 };
 
 /** Status label + color */
@@ -41,7 +41,7 @@ const statusConfig: Record<string, { color: string; label: string }> = {
 export function TaskCard({ task, onAck, onDelete }: Props) {
   const status = statusConfig[task.status] ?? statusConfig.pending;
   const isActive = task.status === 'in_progress';
-  const accent = priorityColor[task.priority] ?? priorityColor[1];
+  const accent = priorityAccent[task.priority] ?? priorityAccent[1];
   const hasEvents = !!(task.on_run || task.on_confirm || task.on_cancel);
 
   return (
@@ -50,12 +50,8 @@ export function TaskCard({ task, onAck, onDelete }: Props) {
       px={12}
       style={{
         borderRadius: 12,
-        background: isActive
-          ? 'rgba(81, 207, 102, 0.06)'
-          : 'var(--ph-surface)',
-        border: isActive
-          ? '1px solid rgba(81, 207, 102, 0.2)'
-          : '1px solid var(--ph-border)',
+        background: accent.bg,
+        border: `1px solid ${accent.border}`,
         display: 'flex',
         gap: 10,
         alignItems: 'stretch',
@@ -67,7 +63,7 @@ export function TaskCard({ task, onAck, onDelete }: Props) {
         style={{
           width: 3,
           borderRadius: 3,
-          background: accent,
+          background: accent.color,
           flexShrink: 0,
           alignSelf: 'stretch',
         }}

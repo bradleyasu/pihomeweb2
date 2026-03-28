@@ -35,14 +35,25 @@ export function Tasks() {
   const tasks = status?.tasks ?? [];
 
   const filtered = useMemo(() => {
+    let list: typeof tasks;
     switch (filter) {
       case 'active':
-        return tasks.filter((t) => t.status === 'in_progress' || t.status === 'pre_in_progress');
+        list = tasks.filter((t) => t.status === 'in_progress' || t.status === 'pre_in_progress');
+        break;
       case 'pending':
-        return tasks.filter((t) => t.status === 'pending');
+        list = tasks.filter((t) => t.status === 'pending');
+        break;
       default:
-        return tasks;
+        list = [...tasks];
     }
+    // Sort by start_time ascending (soonest first), tasks without a date go last
+    list.sort((a, b) => {
+      if (!a.start_time && !b.start_time) return 0;
+      if (!a.start_time) return 1;
+      if (!b.start_time) return -1;
+      return new Date(a.start_time).getTime() - new Date(b.start_time).getTime();
+    });
+    return list;
   }, [tasks, filter]);
 
   const activeCount = tasks.filter((t) => t.status === 'in_progress').length;
