@@ -91,7 +91,7 @@ export function useReloadSettings() {
 export function useFireEvent() {
   return useMutation({
     mutationFn: async (payload: EventPayload) => {
-      const { data } = await apiClient.post('/', { webhook: payload });
+      const { data } = await apiClient.post('/', payload);
       return data;
     },
   });
@@ -106,7 +106,7 @@ export function useEventIntrospection() {
     mutationFn: async (eventType?: string) => {
       const payload: EventPayload = { type: 'introspect' };
       if (eventType) payload.event = eventType;
-      const { data } = await apiClient.post('/', { webhook: payload });
+      const { data } = await apiClient.post('/', payload);
       // The API wraps definitions in { data: { definitions: [...] } } or { definitions: [...] }
       const body = data as Record<string, unknown>;
       const defs = (body?.definitions
@@ -123,7 +123,7 @@ export function useEventIntrospection() {
 export function useCreateTask() {
   return useMutation({
     mutationFn: async (task: Record<string, unknown>) => {
-      const { data } = await apiClient.post('/', { webhook: { type: 'task', ...task } });
+      const { data } = await apiClient.post('/', { type: 'task', ...task });
       return data;
     },
   });
@@ -133,7 +133,7 @@ export function useCreateTask() {
 export function useDeleteTask() {
   return useMutation({
     mutationFn: async (taskId: string) => {
-      const { data } = await apiClient.post('/', { webhook: { type: 'delete', entity: 'task', id: taskId } });
+      const { data } = await apiClient.post('/', { type: 'delete', entity: 'task', id: taskId });
       return data;
     },
   });
@@ -143,7 +143,7 @@ export function useDeleteTask() {
 export function useAckTask() {
   return useMutation({
     mutationFn: async (confirm: boolean) => {
-      const { data } = await apiClient.post('/', { webhook: { type: 'acktask', confirm } });
+      const { data } = await apiClient.post('/', { type: 'acktask', confirm });
       return data;
     },
   });
@@ -155,7 +155,7 @@ export function useAckTask() {
 export function useCreateTimer() {
   return useMutation({
     mutationFn: async ({ label, duration }: { label: string; duration: number }) => {
-      const { data } = await apiClient.post('/', { webhook: { type: 'timer', label, duration } });
+      const { data } = await apiClient.post('/', { type: 'timer', label, duration });
       return data;
     },
   });
