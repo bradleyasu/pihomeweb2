@@ -23,25 +23,25 @@ interface Props {
 }
 
 /** Priority color palette for accent theming */
-const priorityAccent: Record<number, { color: string; bg: string; border: string }> = {
-  1: { color: 'var(--ph-blue)', bg: 'rgba(74, 144, 226, 0.06)', border: 'rgba(74, 144, 226, 0.18)' },
-  2: { color: '#f0a030', bg: 'rgba(240, 160, 48, 0.06)', border: 'rgba(240, 160, 48, 0.18)' },
-  3: { color: 'var(--ph-red)', bg: 'rgba(255, 107, 107, 0.08)', border: 'rgba(255, 107, 107, 0.2)' },
+const priorityAccent: Record<string, { color: string; bg: string; border: string }> = {
+  LOW: { color: 'var(--ph-blue)', bg: 'rgba(74, 144, 226, 0.06)', border: 'rgba(74, 144, 226, 0.18)' },
+  MEDIUM: { color: '#f0a030', bg: 'rgba(240, 160, 48, 0.06)', border: 'rgba(240, 160, 48, 0.18)' },
+  HIGH: { color: 'var(--ph-red)', bg: 'rgba(255, 107, 107, 0.08)', border: 'rgba(255, 107, 107, 0.2)' },
 };
 
 /** Status label + color */
 const statusConfig: Record<string, { color: string; label: string }> = {
-  pending: { color: 'gray', label: 'Pending' },
-  pre_in_progress: { color: 'yellow', label: 'Starting' },
-  in_progress: { color: 'green', label: 'Active' },
-  completed: { color: 'teal', label: 'Done' },
-  canceled: { color: 'red', label: 'Canceled' },
+  PENDING: { color: 'gray', label: 'Pending' },
+  PRE_IN_PROGRESS: { color: 'yellow', label: 'Starting' },
+  IN_PROGRESS: { color: 'green', label: 'Active' },
+  COMPLETED: { color: 'teal', label: 'Done' },
+  CANCELED: { color: 'red', label: 'Canceled' },
 };
 
 export function TaskCard({ task, onAck, onDelete }: Props) {
-  const status = statusConfig[task.status] ?? statusConfig.pending;
-  const isActive = task.status === 'in_progress';
-  const accent = priorityAccent[task.priority] ?? priorityAccent[1];
+  const status = statusConfig[task.status] ?? statusConfig.PENDING;
+  const isActive = task.status === 'IN_PROGRESS';
+  const accent = priorityAccent[task.priority] ?? priorityAccent.LOW;
   const hasEvents = !!(task.on_run || task.on_confirm || task.on_cancel);
 
   return (

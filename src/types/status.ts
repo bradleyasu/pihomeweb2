@@ -71,8 +71,8 @@ export interface TaskStatus {
   id: string;
   name: string;
   description: string;
-  status: 'pending' | 'pre_in_progress' | 'in_progress' | 'completed' | 'canceled';
-  priority: number; // 1=Low, 2=Medium, 3=High
+  status: 'PENDING' | 'PRE_IN_PROGRESS' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELED';
+  priority: 'LOW' | 'MEDIUM' | 'HIGH';
   start_time?: string;
   state_id?: string;
   trigger_state?: string;

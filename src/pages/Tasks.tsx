@@ -38,10 +38,10 @@ export function Tasks() {
     let list: typeof tasks;
     switch (filter) {
       case 'active':
-        list = tasks.filter((t) => t.status === 'in_progress' || t.status === 'pre_in_progress');
+        list = tasks.filter((t) => t.status === 'IN_PROGRESS' || t.status === 'PRE_IN_PROGRESS');
         break;
       case 'pending':
-        list = tasks.filter((t) => t.status === 'pending');
+        list = tasks.filter((t) => t.status === 'PENDING');
         break;
       default:
         list = [...tasks];
@@ -56,8 +56,8 @@ export function Tasks() {
     return list;
   }, [tasks, filter]);
 
-  const activeCount = tasks.filter((t) => t.status === 'in_progress').length;
-  const pendingCount = tasks.filter((t) => t.status === 'pending').length;
+  const activeCount = tasks.filter((t) => t.status === 'IN_PROGRESS').length;
+  const pendingCount = tasks.filter((t) => t.status === 'PENDING').length;
 
   const handleAck = (confirm: boolean) => {
     ackTask.mutate(confirm, {

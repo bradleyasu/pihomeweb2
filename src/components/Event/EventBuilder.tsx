@@ -77,12 +77,22 @@ export function parseDefinition(raw: RawEventDef): EventDef {
     .filter(([key]) => key !== 'type')
     .map(([name, meta]) => {
       const m = meta as Record<string, unknown> | null;
-      return {
+      const fieldType = (typeof m?.type === 'string' ? m.type : 'string').toLowerCase();
+      const def: FieldDef = {
         name,
-        type: (typeof m?.type === 'string' ? m.type : 'string').toLowerCase(),
+        type: fieldType,
         required: (m?.required as boolean) ?? false,
         description: (m?.description as string) ?? null,
       };
+      // Carry through options for "option" type fields
+      if (fieldType === 'option' && m?.options) {
+        if (Array.isArray(m.options)) {
+          def.options = m.options as string[];
+        } else if (typeof m.options === 'object') {
+          def.options = m.options as Record<string, string>;
+        }
+      }
+      return def;
     });
   return { type: raw.type as string, fields };
 }
@@ -462,6 +472,34 @@ export function FieldInput({ field, value, onChange, allDefs }: FieldInputProps)
     );
   }
 
+  // ── option → Select dropdown ──
+  if (field.type === 'option' && field.options) {
+    const selectData = Array.isArray(field.options)
+      ? field.options.map((v) => ({ value: String(v), label: String(v) }))
+      : Object.entries(field.options).map(([k, v]) => ({ value: k, label: v }));
+
+    return (
+      <Select
+        label={fieldLabel}
+        description={field.description}
+        placeholder={`Select ${field.name}`}
+        data={selectData}
+        value={value != null && value !== '' ? String(value) : null}
+        onChange={(v) => {
+          if (!v) { onChange(''); return; }
+          // Cast to number if all option values are numeric
+          const vals = Array.isArray(field.options)
+            ? field.options.map(String)
+            : Object.keys(field.options!);
+          const allNumeric = vals.every((s) => s !== '' && !isNaN(Number(s)));
+          onChange(allNumeric ? Number(v) : v);
+        }}
+        searchable
+        size="sm"
+      />
+    );
+  }
+
   // ── default: string / unknown → TextInput ──
   return (
     <TextInput
@@ -481,6 +519,8 @@ export function EventBuilder() {
   const [selectedType, setSelectedType] = useState<string>('');
   const [fieldValues, setFieldValues] = useState<Record<string, unknown>>({});
   const [showPreview, setShowPreview] = useState(false);
+  const [showResponse, setShowResponse] = useState(false);
+  const [lastResponse, setLastResponse] = useState<unknown>(null);
   const [copied, setCopied] = useState(false);
 
   const introspect = useEventIntrospection();
@@ -546,9 +586,14 @@ export function EventBuilder() {
   const handleFire = () => {
     const payload = buildPayload();
     if (!payload) return;
+    setLastResponse(null);
+    setShowResponse(false);
     fireEvent.mutate(payload as EventPayload, {
-      onSuccess: () =>
-        notifications.show({ title: 'Event fired', message: selectedType, color: 'green' }),
+      onSuccess: (data) => {
+        setLastResponse(data);
+        setShowResponse(true);
+        notifications.show({ title: 'Event fired', message: selectedType, color: 'green' });
+      },
       onError: () =>
         notifications.show({ title: 'Failed', message: 'Could not fire event', color: 'red' }),
     });
@@ -691,15 +736,53 @@ export function EventBuilder() {
 
             {/* Fire button */}
             <Button
-              size="lg"
+              size="compact-sm"
               color="rose"
-              leftSection={<IconBolt size={20} />}
+              leftSection={<IconBolt size={14} />}
               onClick={handleFire}
               loading={fireEvent.isPending}
-              fullWidth
+              style={{ alignSelf: 'flex-end' }}
             >
               Fire Event
             </Button>
+
+            {/* Response payload */}
+            {lastResponse !== null && (
+              <Box>
+                <Group
+                  justify="space-between"
+                  mb={showResponse ? 'xs' : 0}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => setShowResponse(!showResponse)}
+                >
+                  <Group gap={6}>
+                    <Text size="xs" fw={600} c="dimmed" tt="uppercase" style={{ letterSpacing: 0.5 }}>
+                      Response
+                    </Text>
+                    <Badge size="xs" variant="light" color="green">200</Badge>
+                  </Group>
+                  {showResponse
+                    ? <IconChevronUp size={14} color="var(--ph-text-dim)" />
+                    : <IconChevronDown size={14} color="var(--ph-text-dim)" />
+                  }
+                </Group>
+                <Collapse in={showResponse}>
+                  <Code
+                    block
+                    style={{
+                      background: 'rgba(0, 0, 0, 0.3)',
+                      fontSize: 12,
+                      maxHeight: 300,
+                      overflow: 'auto',
+                    }}
+                  >
+                    {typeof lastResponse === 'string'
+                      ? lastResponse
+                      : JSON.stringify(lastResponse, null, 2)}
+                  </Code>
+                </Collapse>
+              </Box>
+            )}
           </Stack>
         </Card>
       ) : (
