@@ -5,7 +5,8 @@
  * Priority is shown as a left-edge color strip. Actions are
  * contextual: confirm/reject for active tasks, delete for others.
  */
-import { Group, Text, Badge, ActionIcon, Box } from '@mantine/core';
+import { useState } from 'react';
+import { Group, Text, Badge, ActionIcon, Box, Popover, Button, Stack } from '@mantine/core';
 import {
   IconCheck,
   IconX,
@@ -39,6 +40,7 @@ const statusConfig: Record<string, { color: string; label: string }> = {
 };
 
 export function TaskCard({ task, onAck, onDelete }: Props) {
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const status = statusConfig[task.status] ?? statusConfig.PENDING;
   const isActive = task.status === 'IN_PROGRESS';
   const accent = priorityAccent[task.priority] ?? priorityAccent.LOW;
@@ -145,16 +147,33 @@ export function TaskCard({ task, onAck, onDelete }: Props) {
             </ActionIcon>
           </>
         ) : onDelete ? (
-          <ActionIcon
-            variant="subtle"
-            color="gray"
-            size="sm"
-            radius="xl"
-            onClick={() => onDelete(task.id)}
-            title="Delete"
-          >
-            <IconTrash size={14} />
-          </ActionIcon>
+          <Popover opened={confirmOpen} onChange={setConfirmOpen} position="left" withArrow shadow="md">
+            <Popover.Target>
+              <ActionIcon
+                variant="subtle"
+                color="gray"
+                size="sm"
+                radius="xl"
+                onClick={() => setConfirmOpen(true)}
+                title="Delete"
+              >
+                <IconTrash size={14} />
+              </ActionIcon>
+            </Popover.Target>
+            <Popover.Dropdown p="xs">
+              <Stack gap={6}>
+                <Text size="xs">Delete this task?</Text>
+                <Group gap={6} justify="flex-end">
+                  <Button size="compact-xs" variant="subtle" color="gray" onClick={() => setConfirmOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button size="compact-xs" color="red" onClick={() => { setConfirmOpen(false); onDelete(task.id); }}>
+                    Delete
+                  </Button>
+                </Group>
+              </Stack>
+            </Popover.Dropdown>
+          </Popover>
         ) : null}
       </Group>
     </Box>
