@@ -26,11 +26,6 @@ import {
 } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
 import { notifications } from '@mantine/notifications';
-import {
-  IconPlayerPlay,
-  IconCheck,
-  IconX,
-} from '@tabler/icons-react';
 import { useCreateTask, useEventIntrospection } from '../../api/queries.ts';
 import { parseDefinition } from '../Event/EventBuilder.tsx';
 import { EventPicker } from '../Event/EventPicker.tsx';
@@ -156,6 +151,8 @@ export function TaskCreator({ opened, onClose }: Props) {
     setOnCancel(null);
   };
 
+
+
   return (
     <Modal
       opened={opened}
@@ -209,7 +206,12 @@ export function TaskCreator({ opened, onClose }: Props) {
                 label="Start Date & Time"
                 placeholder="Pick a date and time"
                 value={startDate}
-                onChange={(val) => setStartDate(val as Date | null)}
+                onChange={(val) => {
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-expect-error
+                  const dt = new Date(val);
+                  setStartDate(dt);
+                }}
                 minDate={new Date()}
                 clearable
                 valueFormat="MM/DD/YYYY hh:mm A"
