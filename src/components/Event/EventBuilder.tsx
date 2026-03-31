@@ -860,7 +860,7 @@ export function EventBuilder() {
                 const payload = buildPayload();
                 if (!payload) return;
                 saveEvent.mutate(
-                  { type: 'savefavoriteevent', name: saveName.trim(), event: payload } as EventPayload,
+                  { type: 'save_favorite', name: saveName.trim(), event: payload } as EventPayload,
                   {
                     onSuccess: () => {
                       notifications.show({ title: 'Saved', message: saveName, color: 'green' });
