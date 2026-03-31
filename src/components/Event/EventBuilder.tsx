@@ -35,6 +35,7 @@ import {
   Tooltip,
   Loader,
   Divider,
+  Modal,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import {
@@ -46,6 +47,7 @@ import {
   IconPlus,
   IconTrash,
   IconRefresh,
+  IconBookmark,
 } from '@tabler/icons-react';
 import { useEventIntrospection, useFireEvent } from '../../api/queries.ts';
 import type { EventPayload, RawEventDef, EventDef, FieldDef } from '../../types/index.ts';
@@ -522,9 +524,12 @@ export function EventBuilder() {
   const [showResponse, setShowResponse] = useState(false);
   const [lastResponse, setLastResponse] = useState<unknown>(null);
   const [copied, setCopied] = useState(false);
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
+  const [saveName, setSaveName] = useState('');
 
   const introspect = useEventIntrospection();
   const fireEvent = useFireEvent();
+  const saveEvent = useFireEvent();
 
   // Load event definitions on mount
   useEffect(() => {
@@ -734,17 +739,28 @@ export function EventBuilder() {
               </Collapse>
             </Box>
 
-            {/* Fire button */}
-            <Button
-              size="compact-sm"
-              color="rose"
-              leftSection={<IconBolt size={14} />}
-              onClick={handleFire}
-              loading={fireEvent.isPending}
-              style={{ alignSelf: 'flex-end' }}
-            >
-              Fire Event
-            </Button>
+            {/* Action buttons */}
+            <Group justify="flex-end" gap="xs">
+              <Button
+                size="compact-sm"
+                variant="light"
+                color="gray"
+                leftSection={<IconBookmark size={14} />}
+                onClick={() => { setSaveName(''); setSaveModalOpen(true); }}
+                disabled={!buildPayload()}
+              >
+                Save
+              </Button>
+              <Button
+                size="compact-sm"
+                color="rose"
+                leftSection={<IconBolt size={14} />}
+                onClick={handleFire}
+                loading={fireEvent.isPending}
+              >
+                Fire Event
+              </Button>
+            </Group>
 
             {/* Response payload */}
             {lastResponse !== null && (
@@ -809,6 +825,58 @@ export function EventBuilder() {
           </Stack>
         </Card>
       )}
+      {/* Save favorite modal */}
+      <Modal
+        opened={saveModalOpen}
+        onClose={() => setSaveModalOpen(false)}
+        title="Save Favorite Event"
+        centered
+        size="sm"
+        styles={{
+          header: { background: 'var(--ph-surface-solid)', borderBottom: '1px solid var(--ph-border)' },
+          body: { background: 'var(--ph-surface-solid)' },
+          content: { background: 'var(--ph-surface-solid)' },
+        }}
+      >
+        <Stack gap="sm">
+          <TextInput
+            label="Name"
+            placeholder="My favorite event"
+            value={saveName}
+            onChange={(e) => setSaveName(e.currentTarget.value)}
+            data-autofocus
+          />
+          <Group justify="flex-end" gap="xs">
+            <Button variant="subtle" color="gray" size="compact-sm" onClick={() => setSaveModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              size="compact-sm"
+              color="rose"
+              leftSection={<IconBookmark size={14} />}
+              disabled={!saveName.trim()}
+              loading={saveEvent.isPending}
+              onClick={() => {
+                const payload = buildPayload();
+                if (!payload) return;
+                saveEvent.mutate(
+                  { type: 'savefavoriteevent', name: saveName.trim(), event: payload } as EventPayload,
+                  {
+                    onSuccess: () => {
+                      notifications.show({ title: 'Saved', message: saveName, color: 'green' });
+                      setSaveModalOpen(false);
+                    },
+                    onError: () =>
+                      notifications.show({ title: 'Failed', message: 'Could not save event', color: 'red' }),
+                  },
+                );
+              }}
+            >
+              Save
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </Stack>
   );
 }
