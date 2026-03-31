@@ -51,6 +51,7 @@ import {
 } from '../../api/queries.ts';
 import { parseDefinition, defaultForType, FieldInput } from './EventBuilder.tsx';
 import type { EventDef } from '../../types/index.ts';
+import type { EventPayload } from '../../types/status.ts';
 
 export function AirPlayListeners() {
   const { data: listeners, isPending, isError, refetch } = useAirPlayListeners();
@@ -158,7 +159,7 @@ export function AirPlayListeners() {
 interface ListenerCardProps {
   listener: AirPlayListener;
   onDelete: (id: string) => void;
-  onFire: (action: Record<string, unknown>) => void;
+  onFire: (action: EventPayload) => void;
 }
 
 function ListenerCard({ listener, onDelete, onFire }: ListenerCardProps) {
@@ -489,9 +490,9 @@ function useListenerForm(
   const setField = (name: string, value: unknown) =>
     setFieldValues((prev) => ({ ...prev, [name]: value }));
 
-  const buildActionPayload = useCallback((): Record<string, unknown> | null => {
+  const buildActionPayload = useCallback((): EventPayload | null => {
     if (!selectedType) return null;
-    const payload: Record<string, unknown> = { type: selectedType };
+    const payload: EventPayload = { type: selectedType };
     for (const [k, v] of Object.entries(fieldValues)) {
       if (v === '' || v === null || v === undefined) continue;
       if (Array.isArray(v) && v.length === 0) continue;

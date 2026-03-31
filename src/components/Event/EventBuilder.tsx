@@ -74,6 +74,7 @@ function copyToClipboard(text: string): boolean {
 // ─── Parsing ────────────────────────────────────────────────────────
 
 /** Parse a raw API definition object into our normalised EventDef shape */
+// eslint-disable-next-line react-refresh/only-export-components
 export function parseDefinition(raw: RawEventDef): EventDef {
   const fields: FieldDef[] = Object.entries(raw)
     .filter(([key]) => key !== 'type')
@@ -100,6 +101,7 @@ export function parseDefinition(raw: RawEventDef): EventDef {
 }
 
 /** Get the default initial value for a given field type */
+// eslint-disable-next-line react-refresh/only-export-components
 export function defaultForType(type: string): unknown {
   switch (type) {
     case 'boolean': return false;
@@ -571,9 +573,9 @@ export function EventBuilder() {
     setFieldValues((prev) => ({ ...prev, [name]: value }));
 
   /** Build the final event payload, filtering out empty optional values */
-  const buildPayload = useCallback((): Record<string, unknown> | null => {
+  const buildPayload = useCallback((): EventPayload | null => {
     if (!selectedType) return null;
-    const payload: Record<string, unknown> = { type: selectedType };
+    const payload: EventPayload = { type: selectedType };
     for (const [k, v] of Object.entries(fieldValues)) {
       if (v === '' || v === null || v === undefined) continue;
       if (Array.isArray(v) && v.length === 0) continue;
@@ -593,7 +595,7 @@ export function EventBuilder() {
     if (!payload) return;
     setLastResponse(null);
     setShowResponse(false);
-    fireEvent.mutate(payload as EventPayload, {
+    fireEvent.mutate(payload, {
       onSuccess: (data) => {
         setLastResponse(data);
         setShowResponse(true);

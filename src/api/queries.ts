@@ -166,7 +166,7 @@ export function useSaveFavorite() {
 export interface AirPlayListener {
   id: string;
   trigger: 'on_start' | 'on_stop';
-  action: Record<string, unknown>;
+  action: EventPayload;
 }
 
 /** Fetch all AirPlay react listeners */
@@ -176,7 +176,7 @@ export function useAirPlayListeners() {
     queryFn: async () => {
       const { data } = await apiClient.post('/', { type: 'get_airplay_react' });
       const body = data as Record<string, unknown>;
-      const listeners = (body?.listeners ?? {}) as Record<string, { trigger: string; action: Record<string, unknown> }>;
+      const listeners = (body?.listeners ?? {}) as Record<string, { trigger: string; action: EventPayload }>;
       return Object.entries(listeners).map(([id, l]) => ({
         id,
         trigger: l.trigger as 'on_start' | 'on_stop',

@@ -48,10 +48,11 @@ import {
 } from '../../api/queries.ts';
 import { parseDefinition, defaultForType, FieldInput } from './EventBuilder.tsx';
 import type { EventDef } from '../../types/index.ts';
+import type { EventPayload } from '../../types/status.ts';
 
 interface FavoriteItem {
   name: string;
-  event: Record<string, unknown>;
+  event: EventPayload;
 }
 
 /** Normalise raw API response into FavoriteItem[] */
@@ -61,7 +62,7 @@ function parseFavorites(raw: Record<string, unknown>[]): FavoriteItem[] {
   return raw
     .map((item) => {
       if (typeof item.name === 'string' && item.event && typeof item.event === 'object') {
-        return { name: item.name, event: item.event as Record<string, unknown> };
+        return { name: item.name, event: item.event as EventPayload };
       }
       return null;
     })
@@ -176,7 +177,7 @@ export function FavoriteEvents() {
 interface FavoriteCardProps {
   favorite: FavoriteItem;
   onDelete: (name: string) => void;
-  onFire: (event: Record<string, unknown>) => void;
+  onFire: (event: EventPayload) => void;
 }
 
 function FavoriteCard({ favorite, onDelete, onFire }: FavoriteCardProps) {
@@ -340,6 +341,7 @@ function EditFavoriteModal({ opened, onClose, favorite }: EditModalProps) {
       if (!introspect.data) introspect.mutate(undefined);
       const eventType = (favorite.event.type as string) ?? '';
       setSelectedType(eventType);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { type: _, ...rest } = favorite.event;
       setFieldValues(rest);
       setShowPreview(false);
@@ -371,9 +373,9 @@ function EditFavoriteModal({ opened, onClose, favorite }: EditModalProps) {
   const setField = (name: string, value: unknown) =>
     setFieldValues((prev) => ({ ...prev, [name]: value }));
 
-  const buildPayload = useCallback((): Record<string, unknown> | null => {
+  const buildPayload = useCallback((): EventPayload | null => {
     if (!selectedType) return null;
-    const payload: Record<string, unknown> = { type: selectedType };
+    const payload: EventPayload = { type: selectedType };
     for (const [k, v] of Object.entries(fieldValues)) {
       if (v === '' || v === null || v === undefined) continue;
       if (Array.isArray(v) && v.length === 0) continue;
@@ -595,9 +597,9 @@ function AddFavoriteModal({ opened, onClose }: { opened: boolean; onClose: () =>
   const setField = (fieldName: string, value: unknown) =>
     setFieldValues((prev) => ({ ...prev, [fieldName]: value }));
 
-  const buildPayload = useCallback((): Record<string, unknown> | null => {
+  const buildPayload = useCallback((): EventPayload | null => {
     if (!selectedType) return null;
-    const payload: Record<string, unknown> = { type: selectedType };
+    const payload: EventPayload = { type: selectedType };
     for (const [k, v] of Object.entries(fieldValues)) {
       if (v === '' || v === null || v === undefined) continue;
       if (Array.isArray(v) && v.length === 0) continue;
