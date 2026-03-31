@@ -49,7 +49,7 @@ import {
   IconRefresh,
   IconBookmark,
 } from '@tabler/icons-react';
-import { useEventIntrospection, useFireEvent } from '../../api/queries.ts';
+import { useEventIntrospection, useFireEvent, useSaveFavorite } from '../../api/queries.ts';
 import type { EventPayload, RawEventDef, EventDef, FieldDef } from '../../types/index.ts';
 
 /** Copy text to clipboard with fallback for non-secure contexts (plain HTTP) */
@@ -529,7 +529,7 @@ export function EventBuilder() {
 
   const introspect = useEventIntrospection();
   const fireEvent = useFireEvent();
-  const saveEvent = useFireEvent();
+  const saveFavorite = useSaveFavorite();
 
   // Load event definitions on mount
   useEffect(() => {
@@ -855,12 +855,12 @@ export function EventBuilder() {
               color="rose"
               leftSection={<IconBookmark size={14} />}
               disabled={!saveName.trim()}
-              loading={saveEvent.isPending}
+              loading={saveFavorite.isPending}
               onClick={() => {
                 const payload = buildPayload();
                 if (!payload) return;
-                saveEvent.mutate(
-                  { type: 'save_favorite', name: saveName.trim(), event: payload } as EventPayload,
+                saveFavorite.mutate(
+                  { name: saveName.trim(), event: payload },
                   {
                     onSuccess: () => {
                       notifications.show({ title: 'Saved', message: saveName, color: 'green' });

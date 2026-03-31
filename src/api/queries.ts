@@ -117,6 +117,104 @@ export function useEventIntrospection() {
   });
 }
 
+// ── Favorite Events ───────────────────────────────────────────────
+
+/** Fetch saved favorite events */
+export function useFavoriteEvents() {
+  return useQuery<Record<string, unknown>[]>({
+    queryKey: ['favorites'],
+    queryFn: async () => {
+      const { data } = await apiClient.post('/', { type: 'get_favorites' });
+      const body = data as Record<string, unknown>;
+      const favs = (body?.favorites ?? {}) as Record<string, Record<string, unknown>>;
+      return Object.entries(favs).map(([name, event]) => ({ name, event }));
+    },
+    staleTime: 10_000,
+  });
+}
+
+/** Delete a saved favorite event by name */
+export function useDeleteFavorite() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (name: string) => {
+      const { data } = await apiClient.post('/', { type: 'delete_favorite', name });
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['favorites'] });
+    },
+  });
+}
+
+/** Save (create or update) a favorite event */
+export function useSaveFavorite() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ name, event }: { name: string; event: Record<string, unknown> }) => {
+      const { data } = await apiClient.post('/', { type: 'save_favorite', name, event });
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['favorites'] });
+    },
+  });
+}
+
+// ── AirPlay Listeners ─────────────────────────────────────────────
+
+export interface AirPlayListener {
+  id: string;
+  trigger: 'on_start' | 'on_stop';
+  action: Record<string, unknown>;
+}
+
+/** Fetch all AirPlay react listeners */
+export function useAirPlayListeners() {
+  return useQuery<AirPlayListener[]>({
+    queryKey: ['airplay-listeners'],
+    queryFn: async () => {
+      const { data } = await apiClient.post('/', { type: 'get_airplay_react' });
+      const body = data as Record<string, unknown>;
+      const listeners = (body?.listeners ?? {}) as Record<string, { trigger: string; action: Record<string, unknown> }>;
+      return Object.entries(listeners).map(([id, l]) => ({
+        id,
+        trigger: l.trigger as 'on_start' | 'on_stop',
+        action: l.action,
+      }));
+    },
+    staleTime: 10_000,
+  });
+}
+
+/** Add a new AirPlay react listener */
+export function useAddAirPlayListener() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ trigger, event }: { trigger: string; event: Record<string, unknown> }) => {
+      const { data } = await apiClient.post('/', { type: 'airplay_react', trigger, event });
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['airplay-listeners'] });
+    },
+  });
+}
+
+/** Remove an AirPlay react listener by id */
+export function useRemoveAirPlayListener() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data } = await apiClient.post('/', { type: 'remove_airplay_react', id });
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['airplay-listeners'] });
+    },
+  });
+}
+
 // ── Tasks ──────────────────────────────────────────────────────────
 
 /** Create a new task */
