@@ -35,4 +35,4 @@ export const STATUS_POLL_INTERVAL = 1000;
 export const WS_RECONNECT_DELAY = 5000;
 
 /** App version */
-export const APP_VERSION = '3.30.0';
+export const APP_VERSION = '3.32.0';

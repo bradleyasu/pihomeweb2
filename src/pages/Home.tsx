@@ -17,12 +17,15 @@ import {
   Divider,
 } from '@mantine/core';
 import { IconClock, IconPhoto } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
 import { usePiHome } from '../providers/PiHomeProvider.tsx';
 import { NowPlaying } from '../components/NowPlaying/NowPlaying.tsx';
 import { WeatherCard } from '../components/Weather/WeatherCard.tsx';
 import { TimerCard } from '../components/Timer/TimerCard.tsx';
+import { TaskCard } from '../components/Task/TaskCard.tsx';
 import { AppLauncher } from '../components/AppLauncher/AppLauncher.tsx';
 import { HomeLoader } from '../components/Loading/PageLoader.tsx';
+import { useAckTask } from '../api/queries.ts';
 import { getApiBaseUrl } from '../constants.ts';
 
 /** Live clock component with large display time */
@@ -68,8 +71,25 @@ function Clock() {
 export function Home() {
   const { status } = usePiHome();
   const [wallpaperOpen, setWallpaperOpen] = useState(false);
+  const ackTask = useAckTask();
 
   if (!status) return <HomeLoader />;
+
+  const activeTasks = status.tasks.filter(
+    (t) => t.status === 'IN_PROGRESS' || t.status === 'PRE_IN_PROGRESS',
+  );
+
+  const handleAck = (confirm: boolean) => {
+    ackTask.mutate(confirm, {
+      onSuccess: () => {
+        notifications.show({
+          title: confirm ? 'Task completed' : 'Task rejected',
+          message: '',
+          color: confirm ? 'green' : 'red',
+        });
+      },
+    });
+  };
 
   const wallpaperUrl = status.wallpaper.current
     ? `${getApiBaseUrl()}/wallpaper/${encodeURIComponent(status.wallpaper.current)}`
@@ -99,6 +119,20 @@ export function Home() {
           <Stack gap="xs">
             {status.timers.map((timer, i) => (
               <TimerCard key={`${timer.label}-${i}`} timer={timer} compact />
+            ))}
+          </Stack>
+        </Card>
+      )}
+
+      {/* Active tasks */}
+      {activeTasks.length > 0 && (
+        <Card p="sm">
+          <Text size="xs" fw={600} c="dimmed" tt="uppercase" mb="xs" style={{ letterSpacing: 0.5 }}>
+            Active Tasks
+          </Text>
+          <Stack gap="xs">
+            {activeTasks.map((task) => (
+              <TaskCard key={task.id} task={task} onAck={handleAck} />
             ))}
           </Stack>
         </Card>

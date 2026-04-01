@@ -252,8 +252,10 @@ export function useAckTask() {
 /** Create a new timer */
 export function useCreateTimer() {
   return useMutation({
-    mutationFn: async ({ label, duration }: { label: string; duration: number }) => {
-      const { data } = await apiClient.post('/', { type: 'timer', label, duration });
+    mutationFn: async ({ label, duration, on_complete }: { label: string; duration: number; on_complete?: Record<string, unknown> }) => {
+      const payload: Record<string, unknown> = { type: 'timer', label, duration };
+      if (on_complete) payload.on_complete = on_complete;
+      const { data } = await apiClient.post('/', payload);
       return data;
     },
   });
