@@ -24,8 +24,9 @@ import { WeatherCard } from '../components/Weather/WeatherCard.tsx';
 import { TimerCard } from '../components/Timer/TimerCard.tsx';
 import { TaskCard } from '../components/Task/TaskCard.tsx';
 import { AppLauncher } from '../components/AppLauncher/AppLauncher.tsx';
+import { HomeEvents } from '../components/HomeEvents/HomeEvents.tsx';
 import { HomeLoader } from '../components/Loading/PageLoader.tsx';
-import { useAckTask } from '../api/queries.ts';
+import { useAckTask, useFavoriteEvents } from '../api/queries.ts';
 import { getApiBaseUrl } from '../constants.ts';
 
 /** Live clock component with large display time */
@@ -72,6 +73,9 @@ export function Home() {
   const { status } = usePiHome();
   const [wallpaperOpen, setWallpaperOpen] = useState(false);
   const ackTask = useAckTask();
+  const { data: favorites } = useFavoriteEvents();
+
+  const homeEvents = (favorites ?? []).filter((f) => f.showOnHome);
 
   if (!status) return <HomeLoader />;
 
@@ -191,6 +195,19 @@ export function Home() {
           />
         )}
       </Modal>
+
+      {/* Events section — only shown when the user has flagged saved events */}
+      {homeEvents.length > 0 && (
+        <>
+          <Divider
+            label="Events"
+            labelPosition="center"
+            color="var(--ph-border)"
+            styles={{ label: { color: 'var(--ph-text-dim)', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1 } }}
+          />
+          <HomeEvents events={homeEvents} />
+        </>
+      )}
 
       {/* Divider before app launcher */}
       <Divider

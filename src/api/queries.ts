@@ -119,15 +119,30 @@ export function useEventIntrospection() {
 
 // ── Favorite Events ───────────────────────────────────────────────
 
-/** Fetch saved favorite events */
+export interface FavoriteRecord {
+  name: string;
+  event: Record<string, unknown>;
+  showOnHome: boolean;
+}
+
+/** Fetch saved favorite events.
+ *  Favorites are stored wrapped: { name: { event, show_on_home } }.
+ *  Legacy entries (bare event) are migrated server-side; we still default
+ *  showOnHome to false defensively if the field is absent.
+ */
 export function useFavoriteEvents() {
-  return useQuery<Record<string, unknown>[]>({
+  return useQuery<FavoriteRecord[]>({
     queryKey: ['favorites'],
     queryFn: async () => {
       const { data } = await apiClient.post('/', { type: 'get_favorites' });
       const body = data as Record<string, unknown>;
       const favs = (body?.favorites ?? {}) as Record<string, Record<string, unknown>>;
-      return Object.entries(favs).map(([name, event]) => ({ name, event }));
+      return Object.entries(favs).map(([name, entry]) => {
+        const wrapped = entry as { event?: Record<string, unknown>; show_on_home?: boolean };
+        // Tolerate a legacy bare-event shape that hasn't been migrated yet.
+        const event = (wrapped.event ?? entry) as Record<string, unknown>;
+        return { name, event, showOnHome: wrapped.show_on_home === true };
+      });
     },
     staleTime: 10_000,
   });
@@ -151,8 +166,8 @@ export function useDeleteFavorite() {
 export function useSaveFavorite() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ name, event }: { name: string; event: Record<string, unknown> }) => {
-      const { data } = await apiClient.post('/', { type: 'save_favorite', name, event });
+    mutationFn: async ({ name, event, showOnHome = false }: { name: string; event: Record<string, unknown>; showOnHome?: boolean }) => {
+      const { data } = await apiClient.post('/', { type: 'save_favorite', name, event, show_on_home: showOnHome });
       return data;
     },
     onSuccess: () => {

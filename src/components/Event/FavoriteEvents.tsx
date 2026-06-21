@@ -27,6 +27,7 @@ import {
   Popover,
   Divider,
   ScrollArea,
+  Switch,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import {
@@ -38,6 +39,7 @@ import {
   IconBookmarkOff,
   IconRefresh,
   IconPlus,
+  IconHome,
 } from '@tabler/icons-react';
 import {
   useFavoriteEvents,
@@ -45,6 +47,7 @@ import {
   useSaveFavorite,
   useFireEvent,
   useEventIntrospection,
+  type FavoriteRecord,
 } from '../../api/queries.ts';
 import { parseDefinition, defaultForType, FieldInput } from './EventBuilder.tsx';
 import type { EventDef } from '../../types/index.ts';
@@ -53,16 +56,21 @@ import type { EventPayload } from '../../types/status.ts';
 interface FavoriteItem {
   name: string;
   event: EventPayload;
+  showOnHome: boolean;
 }
 
 /** Normalise raw API response into FavoriteItem[] */
-function parseFavorites(raw: Record<string, unknown>[]): FavoriteItem[] {
+function parseFavorites(raw: FavoriteRecord[]): FavoriteItem[] {
   if (!Array.isArray(raw)) return [];
-  // The API may return [{ name, event }] or a map-like structure
+  // The API may return [{ name, event, showOnHome }] or a map-like structure
   return raw
     .map((item) => {
       if (typeof item.name === 'string' && item.event && typeof item.event === 'object') {
-        return { name: item.name, event: item.event as EventPayload };
+        return {
+          name: item.name,
+          event: item.event as EventPayload,
+          showOnHome: item.showOnHome === true,
+        };
       }
       return null;
     })
@@ -217,6 +225,11 @@ function FavoriteCard({ favorite, onDelete, onFire }: FavoriteCardProps) {
                 <Badge size="xs" variant="light" color="rose">
                   {eventType}
                 </Badge>
+                {favorite.showOnHome && (
+                  <Badge size="xs" variant="light" color="green" leftSection={<IconHome size={10} />}>
+                    On Home
+                  </Badge>
+                )}
                 {fieldCount > 0 && (
                   <Text size="10px" c="dimmed">
                     {fieldCount} field{fieldCount !== 1 ? 's' : ''}
@@ -328,6 +341,7 @@ function EditFavoriteModal({ opened, onClose, favorite }: EditModalProps) {
   const [selectedType, setSelectedType] = useState('');
   const [fieldValues, setFieldValues] = useState<Record<string, unknown>>({});
   const [showPreview, setShowPreview] = useState(false);
+  const [showOnHome, setShowOnHome] = useState(false);
 
   // Fetch definitions when modal opens
   const definitions: EventDef[] = useMemo(() => {
@@ -345,6 +359,7 @@ function EditFavoriteModal({ opened, onClose, favorite }: EditModalProps) {
       const { type: _, ...rest } = favorite.event;
       setFieldValues(rest);
       setShowPreview(false);
+      setShowOnHome(favorite.showOnHome);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opened]);
@@ -394,7 +409,7 @@ function EditFavoriteModal({ opened, onClose, favorite }: EditModalProps) {
     const payload = buildPayload();
     if (!payload) return;
     saveFavorite.mutate(
-      { name: favorite.name, event: payload },
+      { name: favorite.name, event: payload, showOnHome },
       {
         onSuccess: () => {
           notifications.show({ title: 'Saved', message: favorite.name, color: 'green' });
@@ -513,6 +528,16 @@ function EditFavoriteModal({ opened, onClose, favorite }: EditModalProps) {
             </>
           )}
 
+          {/* Show on Home toggle */}
+          <Divider color="var(--ph-border)" />
+          <Switch
+            checked={showOnHome}
+            onChange={(e) => setShowOnHome(e.currentTarget.checked)}
+            color="rose"
+            label="Show on Home"
+            description="Add a quick-run button for this event to the home screen"
+          />
+
           {/* Actions */}
           <Group justify="flex-end" gap="xs">
             <Button variant="subtle" color="gray" size="compact-sm" onClick={onClose}>
@@ -556,6 +581,7 @@ function AddFavoriteModal({ opened, onClose }: { opened: boolean; onClose: () =>
   const [selectedType, setSelectedType] = useState('');
   const [fieldValues, setFieldValues] = useState<Record<string, unknown>>({});
   const [showPreview, setShowPreview] = useState(false);
+  const [showOnHome, setShowOnHome] = useState(false);
 
   const definitions: EventDef[] = useMemo(() => {
     const raw = introspect.data ?? [];
@@ -569,6 +595,7 @@ function AddFavoriteModal({ opened, onClose }: { opened: boolean; onClose: () =>
       setSelectedType('');
       setFieldValues({});
       setShowPreview(false);
+      setShowOnHome(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opened]);
@@ -622,7 +649,7 @@ function AddFavoriteModal({ opened, onClose }: { opened: boolean; onClose: () =>
     const payload = buildPayload();
     if (!payload) return;
     saveFavorite.mutate(
-      { name: name.trim(), event: payload },
+      { name: name.trim(), event: payload, showOnHome },
       {
         onSuccess: () => {
           notifications.show({ title: 'Saved', message: name, color: 'green' });
@@ -748,6 +775,16 @@ function AddFavoriteModal({ opened, onClose }: { opened: boolean; onClose: () =>
               </Box>
             </>
           )}
+
+          {/* Show on Home toggle */}
+          <Divider color="var(--ph-border)" />
+          <Switch
+            checked={showOnHome}
+            onChange={(e) => setShowOnHome(e.currentTarget.checked)}
+            color="rose"
+            label="Show on Home"
+            description="Add a quick-run button for this event to the home screen"
+          />
 
           {/* Actions */}
           <Group justify="flex-end" gap="xs">
