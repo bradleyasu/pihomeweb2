@@ -11,6 +11,7 @@ import {
   IconChecklist,
   IconHourglass,
   IconBolt,
+  IconPhotoUp,
   IconSettings,
   IconWifiOff,
 } from '@tabler/icons-react';
@@ -28,6 +29,7 @@ const tabs: { id: TabId; label: string; icon: typeof IconHome }[] = [
   { id: 'tasks', label: 'Tasks', icon: IconChecklist },
   { id: 'timers', label: 'Timers', icon: IconHourglass },
   { id: 'events', label: 'Events', icon: IconBolt },
+  { id: 'uploads', label: 'Uploads', icon: IconPhotoUp },
   { id: 'settings', label: 'Settings', icon: IconSettings },
 ];
 
@@ -91,7 +93,7 @@ export function AppShell({ activeTab, onTabChange, children }: Props) {
           flexShrink: 0,
         }}
       >
-        <Group justify="space-around" px="xs">
+        <Group justify="space-around" px={4} gap={2} wrap="nowrap">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             const Icon = tab.icon;
@@ -100,7 +102,7 @@ export function AppShell({ activeTab, onTabChange, children }: Props) {
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
                 py={6}
-                px={12}
+                px={6}
                 style={{
                   borderRadius: 16,
                   background: isActive ? 'var(--ph-accent-dim)' : 'transparent',
@@ -109,7 +111,8 @@ export function AppShell({ activeTab, onTabChange, children }: Props) {
                   flexDirection: 'column',
                   alignItems: 'center',
                   gap: 2,
-                  minWidth: 52,
+                  flex: 1,
+                  minWidth: 0,
                 }}
               >
                 <Icon

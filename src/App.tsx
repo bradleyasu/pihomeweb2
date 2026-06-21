@@ -12,8 +12,9 @@ import { Tasks } from './pages/Tasks.tsx';
 import { Timers } from './pages/Timers.tsx';
 import { Events } from './pages/Events.tsx';
 import { Settings } from './pages/Settings.tsx';
+import { Uploads } from './pages/Uploads.tsx';
 
-export type TabId = 'home' | 'tasks' | 'timers' | 'events' | 'settings';
+export type TabId = 'home' | 'tasks' | 'timers' | 'events' | 'uploads' | 'settings';
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabId>('home');
@@ -24,6 +25,7 @@ function App() {
       case 'tasks': return <Tasks />;
       case 'timers': return <Timers />;
       case 'events': return <Events />;
+      case 'uploads': return <Uploads />;
       case 'settings': return <Settings />;
     }
   }, [activeTab]);

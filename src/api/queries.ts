@@ -1,7 +1,7 @@
 /**
  * React Query query/mutation hooks for the PiHome HTTP API.
  */
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import apiClient from './client.ts';
 import type { SettingsData, EventPayload, RawEventDef } from '../types/index.ts';
 
@@ -243,6 +243,167 @@ export function useAckTask() {
     mutationFn: async (confirm: boolean) => {
       const { data } = await apiClient.post('/', { type: 'acktask', confirm });
       return data;
+    },
+  });
+}
+
+// ── Uploads ─────────────────────────────────────────────────────────
+
+export interface UploadItem {
+  name: string;
+  url: string; // server-relative path, e.g. "/uploads/foo.png"
+}
+
+/** Read a File into a base64 string (without the data-URL prefix) */
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      const comma = result.indexOf(',');
+      resolve(comma >= 0 ? result.slice(comma + 1) : result);
+    };
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
+export interface UploadsPage {
+  uploads: UploadItem[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+export const UPLOADS_PAGE_SIZE = 24;
+export const DEFAULT_ALBUM = 'Default';
+
+export interface Album {
+  name: string;
+  count: number;
+}
+
+/** Fetch all albums (with image counts) and the active wallpaper album */
+export function useAlbums() {
+  return useQuery<{ albums: Album[]; active: string }>({
+    queryKey: ['albums'],
+    queryFn: async () => {
+      const { data } = await apiClient.post('/', { type: 'list_albums' });
+      const body = data as Record<string, unknown>;
+      return {
+        albums: (body?.albums ?? []) as Album[],
+        active: (body?.active as string) ?? DEFAULT_ALBUM,
+      };
+    },
+    staleTime: 10_000,
+  });
+}
+
+/** Create a new album */
+export function useCreateAlbum() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (name: string) => {
+      const { data } = await apiClient.post('/', { type: 'create_album', name });
+      return data;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['albums'] }),
+  });
+}
+
+/** Rename an album */
+export function useRenameAlbum() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ name, newName }: { name: string; newName: string }) => {
+      const { data } = await apiClient.post('/', { type: 'rename_album', name, new_name: newName });
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['albums'] });
+      qc.invalidateQueries({ queryKey: ['uploads'] });
+    },
+  });
+}
+
+/** Delete an album and all images inside it */
+export function useDeleteAlbum() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (name: string) => {
+      const { data } = await apiClient.post('/', { type: 'delete_album', name });
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['albums'] });
+      qc.invalidateQueries({ queryKey: ['uploads'] });
+    },
+  });
+}
+
+/** Fetch an album's images one page at a time.
+ *  Pagination prevents the gallery from requesting hundreds of images at once,
+ *  which would overload the Pi's single-threaded HTTP server.
+ */
+export function useUploads(album: string) {
+  return useInfiniteQuery<UploadsPage>({
+    queryKey: ['uploads', album],
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }) => {
+      const { data } = await apiClient.post('/', {
+        type: 'list_uploads',
+        album,
+        offset: pageParam as number,
+        limit: UPLOADS_PAGE_SIZE,
+      });
+      const body = data as Record<string, unknown>;
+      return {
+        uploads: (body?.uploads ?? []) as UploadItem[],
+        total: (body?.total as number) ?? 0,
+        offset: (body?.offset as number) ?? (pageParam as number),
+        limit: (body?.limit as number) ?? UPLOADS_PAGE_SIZE,
+      };
+    },
+    getNextPageParam: (lastPage) => {
+      const next = lastPage.offset + lastPage.limit;
+      return next < lastPage.total ? next : undefined;
+    },
+    staleTime: 10_000,
+  });
+}
+
+/** Upload a single image file into an album (base64 via the event pipeline) */
+export function useUploadImage() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ file, album }: { file: File; album: string }) => {
+      const base64 = await fileToBase64(file);
+      const { data } = await apiClient.post('/', {
+        type: 'upload_image',
+        filename: file.name,
+        album,
+        data: base64,
+      });
+      return data;
+    },
+    onSuccess: (_data, { album }) => {
+      qc.invalidateQueries({ queryKey: ['uploads', album] });
+      qc.invalidateQueries({ queryKey: ['albums'] });
+    },
+  });
+}
+
+/** Delete an uploaded image from an album */
+export function useDeleteUpload() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ album, name }: { album: string; name: string }) => {
+      const { data } = await apiClient.post('/', { type: 'delete_upload', album, name });
+      return data;
+    },
+    onSuccess: (_data, { album }) => {
+      qc.invalidateQueries({ queryKey: ['uploads', album] });
+      qc.invalidateQueries({ queryKey: ['albums'] });
     },
   });
 }
