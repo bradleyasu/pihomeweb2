@@ -201,7 +201,7 @@ function FavoriteCard({ favorite, onDelete, onFire }: FavoriteCardProps) {
       <Card
         p={0}
         style={{
-          background: 'rgba(30, 30, 46, 0.6)',
+          background: 'rgba(50, 46, 40, 0.6)',
           border: '1px solid rgba(255, 255, 255, 0.06)',
           backdropFilter: 'blur(20px)',
           overflow: 'hidden',

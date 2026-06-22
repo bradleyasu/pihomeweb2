@@ -1,44 +1,46 @@
 /**
  * Mantine theme configuration for PiHome.
  *
- * Design direction: "Obsidian" — dark, refined glass-morphism.
- * Deep charcoal backgrounds, rose accent, cool blue info states.
+ * Design direction: "Hearth" — warm, cozy dark UI with refined glass-morphism.
+ * Warm charcoal (brown-tinted) backgrounds, clay/terracotta accent, warm-white
+ * text, with sage / slate / brick / amber semantic states. Mirrors the PiHome
+ * device app's warm dark theme.
  * Outfit for headings, DM Sans for body.
  */
 import { createTheme, type MantineColorsTuple } from '@mantine/core';
 
-/** Rose accent palette built around #e34a6f */
-const rose: MantineColorsTuple = [
-  '#ffe4ec',
-  '#ffc9d6',
-  '#ffaabe',
-  '#ff89a4',
-  '#f46d8a',
-  '#e34a6f',
-  '#cd3f60',
-  '#b53452',
-  '#9c2944',
-  '#7e1d34',
+/** Clay / terracotta accent palette built around #BC6240 (filled) / #DB8A63 (light) */
+const clay: MantineColorsTuple = [
+  '#fdf0e9',
+  '#f6dccb',
+  '#ecb89a',
+  '#e2956c',
+  '#db8a63', // light accent (text/icon highlights on dark)
+  '#cf6f44',
+  '#bf6038', // primary filled (≈ #BC6240)
+  '#a5532f',
+  '#8a4527',
+  '#6f371e',
 ];
 
-/** Deep surface colors for dark UI */
+/** Warm charcoal surface ramp (brown-tinted, not blue-black) */
 const surface: MantineColorsTuple = [
-  '#e8e8ec',
-  '#c4c4cc',
-  '#9e9eab',
-  '#78788a',
-  '#52526a',
-  '#2a2a3d',
-  '#1e1e2e',
-  '#16161f',
-  '#0f0f17',
-  '#0a0a12',
+  '#ece7e0',
+  '#d9d0c4',
+  '#b5aa9a',
+  '#8a7c68',
+  '#5a5048',
+  '#423a33',
+  '#322e28', // raised surface
+  '#2b2722', // header band
+  '#221f1b', // page background
+  '#1a1714',
 ];
 
 export const theme = createTheme({
-  primaryColor: 'rose',
+  primaryColor: 'clay',
   colors: {
-    rose,
+    clay,
     surface,
   },
   fontFamily: '"DM Sans", system-ui, -apple-system, sans-serif',
@@ -51,10 +53,10 @@ export const theme = createTheme({
   components: {
     Card: {
       defaultProps: {
-        bg: 'rgba(30, 30, 46, 0.6)',
+        bg: 'rgba(50, 46, 40, 0.6)',
         style: {
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
+          border: '1px solid rgba(245, 240, 232, 0.07)',
         },
       },
     },

@@ -90,8 +90,8 @@ export function TimerCard({ timer, compact = false }: Props) {
       p="md"
       className={isUrgent ? 'pulse' : undefined}
       style={isUrgent ? {
-        border: '1px solid rgba(255, 107, 107, 0.3)',
-        background: 'rgba(255, 107, 107, 0.05)',
+        border: '1px solid rgba(224, 104, 94, 0.3)',
+        background: 'rgba(224, 104, 94, 0.05)',
       } : undefined}
     >
       <Group gap="md" wrap="nowrap">

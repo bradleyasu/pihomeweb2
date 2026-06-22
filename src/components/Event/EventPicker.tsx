@@ -140,7 +140,7 @@ export function EventPicker({ value, onChange, label, description, definitions: 
         <Card
           p="xs"
           withBorder
-          style={{ borderColor: 'rgba(227, 74, 111, 0.15)', background: 'rgba(227, 74, 111, 0.02)' }}
+          style={{ borderColor: 'rgba(219, 138, 99, 0.15)', background: 'rgba(219, 138, 99, 0.02)' }}
         >
           <Stack gap="xs">
             <Group gap="xs">

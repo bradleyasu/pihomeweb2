@@ -307,7 +307,7 @@ function EventListField({ field, value, onChange, allDefs }: EventListFieldProps
                 </ActionIcon>
               </Group>
               {nestedDef && nestedDef.fields.length > 0 && (
-                <Stack gap="xs" pl="xs" style={{ borderLeft: '2px solid rgba(227, 74, 111, 0.2)' }}>
+                <Stack gap="xs" pl="xs" style={{ borderLeft: '2px solid rgba(219, 138, 99, 0.2)' }}>
                   {nestedDef.fields.map((nf) => (
                     <FieldInput
                       key={nf.name}
@@ -430,7 +430,7 @@ export function FieldInput({ field, value, onChange, allDefs }: FieldInputProps)
     return (
       <Box>
         {fieldLabel}
-        <Card p="xs" mt={4} withBorder style={{ borderColor: 'rgba(227, 74, 111, 0.15)' }}>
+        <Card p="xs" mt={4} withBorder style={{ borderColor: 'rgba(219, 138, 99, 0.15)' }}>
           <Stack gap="xs">
             <Select
               placeholder="Select event type"
@@ -444,7 +444,7 @@ export function FieldInput({ field, value, onChange, allDefs }: FieldInputProps)
               size="xs"
             />
             {nestedDef && nestedDef.fields.length > 0 && (
-              <Stack gap="xs" pl="xs" style={{ borderLeft: '2px solid rgba(227, 74, 111, 0.2)' }}>
+              <Stack gap="xs" pl="xs" style={{ borderLeft: '2px solid rgba(219, 138, 99, 0.2)' }}>
                 {nestedDef.fields.map((nf) => (
                   <FieldInput
                     key={nf.name}

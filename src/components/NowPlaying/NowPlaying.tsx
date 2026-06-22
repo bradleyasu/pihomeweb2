@@ -54,8 +54,8 @@ export function NowPlaying({ nowPlaying }: Props) {
       p="sm"
       className="glow-accent"
       style={{
-        background: 'linear-gradient(135deg, rgba(227, 74, 111, 0.08), rgba(30, 30, 46, 0.6))',
-        border: '1px solid rgba(227, 74, 111, 0.15)',
+        background: 'linear-gradient(135deg, rgba(219, 138, 99, 0.08), rgba(50, 46, 40, 0.6))',
+        border: '1px solid rgba(219, 138, 99, 0.15)',
       }}
     >
       <Group gap="sm" wrap="nowrap">
@@ -66,7 +66,7 @@ export function NowPlaying({ nowPlaying }: Props) {
             height: 56,
             borderRadius: 10,
             overflow: 'hidden',
-            background: 'rgba(227, 74, 111, 0.1)',
+            background: 'rgba(219, 138, 99, 0.1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

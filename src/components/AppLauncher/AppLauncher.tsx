@@ -57,10 +57,10 @@ export function AppLauncher({ screens }: Props) {
               cursor: 'pointer',
               textAlign: 'center',
               border: isActive
-                ? '1px solid rgba(227, 74, 111, 0.4)'
+                ? '1px solid rgba(219, 138, 99, 0.4)'
                 : '1px solid var(--ph-border)',
               background: isActive
-                ? 'rgba(227, 74, 111, 0.08)'
+                ? 'rgba(219, 138, 99, 0.08)'
                 : 'var(--ph-surface)',
               transition: 'all 0.15s ease',
             }}

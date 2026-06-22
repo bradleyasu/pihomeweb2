@@ -63,7 +63,7 @@ export function WeatherCard({ weather }: Props) {
             width: 52,
             height: 52,
             borderRadius: 12,
-            background: 'rgba(77, 171, 247, 0.1)',
+            background: 'rgba(111, 160, 203, 0.1)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

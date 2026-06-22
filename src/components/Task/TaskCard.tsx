@@ -25,9 +25,9 @@ interface Props {
 
 /** Priority color palette for accent theming */
 const priorityAccent: Record<string, { color: string; bg: string; border: string }> = {
-  LOW: { color: 'var(--ph-blue)', bg: 'rgba(74, 144, 226, 0.06)', border: 'rgba(74, 144, 226, 0.18)' },
-  MEDIUM: { color: '#f0a030', bg: 'rgba(240, 160, 48, 0.06)', border: 'rgba(240, 160, 48, 0.18)' },
-  HIGH: { color: 'var(--ph-red)', bg: 'rgba(255, 107, 107, 0.08)', border: 'rgba(255, 107, 107, 0.2)' },
+  LOW: { color: 'var(--ph-blue)', bg: 'rgba(111, 160, 203, 0.06)', border: 'rgba(111, 160, 203, 0.18)' },
+  MEDIUM: { color: '#e9a94a', bg: 'rgba(233, 169, 74, 0.06)', border: 'rgba(233, 169, 74, 0.18)' },
+  HIGH: { color: 'var(--ph-red)', bg: 'rgba(224, 104, 94, 0.08)', border: 'rgba(224, 104, 94, 0.2)' },
 };
 
 /** Status label + color */

@@ -106,7 +106,7 @@ function FieldRow({ field, currentValue, editedValue, onEdit }: FieldRowProps) {
           onChange={(v) => v !== null && onEdit(v)}
           size="sm"
           styles={isEdited ? {
-            input: { borderColor: 'var(--ph-accent)', background: 'rgba(227, 74, 111, 0.05)' },
+            input: { borderColor: 'var(--ph-accent)', background: 'rgba(219, 138, 99, 0.05)' },
           } : {}}
         />
       </Box>
@@ -124,7 +124,7 @@ function FieldRow({ field, currentValue, editedValue, onEdit }: FieldRowProps) {
           onChange={(v) => onEdit(String(v))}
           size="sm"
           styles={isEdited ? {
-            input: { borderColor: 'var(--ph-accent)', background: 'rgba(227, 74, 111, 0.05)' },
+            input: { borderColor: 'var(--ph-accent)', background: 'rgba(219, 138, 99, 0.05)' },
           } : {}}
         />
       </Box>
@@ -142,7 +142,7 @@ function FieldRow({ field, currentValue, editedValue, onEdit }: FieldRowProps) {
         onFocus={() => { if (sensitive && !revealed) setRevealed(true); }}
         size="sm"
         styles={isEdited ? {
-          input: { borderColor: 'var(--ph-accent)', background: 'rgba(227, 74, 111, 0.05)' },
+          input: { borderColor: 'var(--ph-accent)', background: 'rgba(219, 138, 99, 0.05)' },
         } : {}}
         rightSection={
           sensitive ? (

@@ -53,7 +53,7 @@ export function HomeLoader() {
       </Stack>
 
       {/* Weather card */}
-      <Box style={{ borderRadius: 16, border: '1px solid rgba(255,255,255,0.04)', padding: 16, background: 'rgba(30,30,46,0.4)' }}>
+      <Box style={{ borderRadius: 16, border: '1px solid rgba(255,255,255,0.04)', padding: 16, background: 'rgba(50,46,40,0.4)' }}>
         <Group gap="md" wrap="nowrap">
           <Shimmer w={48} h={48} circle delay={120} />
           <Stack gap={6} style={{ flex: 1 }}>
@@ -64,7 +64,7 @@ export function HomeLoader() {
       </Box>
 
       {/* Now playing */}
-      <Box style={{ borderRadius: 16, border: '1px solid rgba(255,255,255,0.04)', padding: 16, background: 'rgba(30,30,46,0.4)' }}>
+      <Box style={{ borderRadius: 16, border: '1px solid rgba(255,255,255,0.04)', padding: 16, background: 'rgba(50,46,40,0.4)' }}>
         <Group gap="md" wrap="nowrap">
           <Shimmer w={56} h={56} r={10} delay={240} />
           <Stack gap={6} style={{ flex: 1 }}>
@@ -79,7 +79,7 @@ export function HomeLoader() {
       <Group gap="sm" wrap="wrap">
         {[0, 1, 2, 3].map((i) => (
           <Box key={i} style={{ flex: '1 1 calc(50% - 8px)', minWidth: 0 }}>
-            <Box style={{ borderRadius: 14, border: '1px solid rgba(255,255,255,0.04)', padding: 14, background: 'rgba(30,30,46,0.4)' }}>
+            <Box style={{ borderRadius: 14, border: '1px solid rgba(255,255,255,0.04)', padding: 14, background: 'rgba(50,46,40,0.4)' }}>
               <Group gap="sm" wrap="nowrap">
                 <Shimmer w={36} h={36} circle delay={400 + i * 60} />
                 <Shimmer w="60%" h={12} r={6} delay={420 + i * 60} />
@@ -109,7 +109,7 @@ export function TasksLoader() {
       {[0, 1, 2].map((i) => (
         <Box
           key={i}
-          style={{ borderRadius: 16, border: '1px solid rgba(255,255,255,0.04)', padding: 16, background: 'rgba(30,30,46,0.4)' }}
+          style={{ borderRadius: 16, border: '1px solid rgba(255,255,255,0.04)', padding: 16, background: 'rgba(50,46,40,0.4)' }}
         >
           <Stack gap={8}>
             <Group justify="space-between" wrap="nowrap">
@@ -136,7 +136,7 @@ export function TimersLoader() {
       <Shimmer w={110} h={24} r={8} />
 
       {/* Create form */}
-      <Box style={{ borderRadius: 16, border: '1px solid rgba(255,255,255,0.04)', padding: 16, background: 'rgba(30,30,46,0.4)' }}>
+      <Box style={{ borderRadius: 16, border: '1px solid rgba(255,255,255,0.04)', padding: 16, background: 'rgba(50,46,40,0.4)' }}>
         <Stack gap="sm">
           <Shimmer w="100%" h={36} r={8} delay={80} />
           <Group gap="sm" wrap="nowrap">
@@ -147,7 +147,7 @@ export function TimersLoader() {
       </Box>
 
       {/* Timer card */}
-      <Box style={{ borderRadius: 16, border: '1px solid rgba(255,255,255,0.04)', padding: 16, background: 'rgba(30,30,46,0.4)' }}>
+      <Box style={{ borderRadius: 16, border: '1px solid rgba(255,255,255,0.04)', padding: 16, background: 'rgba(50,46,40,0.4)' }}>
         <Group gap="md" wrap="nowrap">
           <Shimmer w={64} h={64} circle delay={200} />
           <Stack gap={6} style={{ flex: 1 }}>
@@ -184,7 +184,7 @@ export function SettingsLoader() {
             borderRadius: 16,
             border: '1px solid rgba(255,255,255,0.04)',
             padding: '14px 18px',
-            background: 'rgba(30,30,46,0.4)',
+            background: 'rgba(50,46,40,0.4)',
           }}
         >
           <Group justify="space-between" wrap="nowrap">

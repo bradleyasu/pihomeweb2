@@ -52,17 +52,17 @@ export function AppShell({ activeTab, onTabChange, children }: Props) {
           px="md"
           style={{
             background: stale
-              ? 'rgba(255, 180, 50, 0.12)'
-              : 'rgba(255, 107, 107, 0.15)',
+              ? 'rgba(233, 169, 74, 0.12)'
+              : 'rgba(224, 104, 94, 0.15)',
             borderBottom: stale
-              ? '1px solid rgba(255, 180, 50, 0.25)'
-              : '1px solid rgba(255, 107, 107, 0.3)',
+              ? '1px solid rgba(233, 169, 74, 0.25)'
+              : '1px solid rgba(224, 104, 94, 0.3)',
             flexShrink: 0,
           }}
         >
           <Group gap={6} justify="center">
-            <IconWifiOff size={14} color={stale ? '#ffb432' : 'var(--ph-red)'} />
-            <Text size="xs" c={stale ? '#ffb432' : 'var(--ph-red)'} fw={500}>
+            <IconWifiOff size={14} color={stale ? '#e9a94a' : 'var(--ph-red)'} />
+            <Text size="xs" c={stale ? '#e9a94a' : 'var(--ph-red)'} fw={500}>
               {stale ? 'Offline — showing last known state' : 'Disconnected — reconnecting...'}
             </Text>
           </Group>
