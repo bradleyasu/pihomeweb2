@@ -63,6 +63,7 @@ function cleanEventPayload(event: Record<string, unknown> | null): Record<string
 export function TaskCreator({ opened, onClose }: Props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [backgroundImage, setBackgroundImage] = useState('');
   const [priority, setPriority] = useState<string>('2');
   const [isScheduled, setIsScheduled] = useState(false);
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -106,6 +107,9 @@ export function TaskCreator({ opened, onClose }: Props) {
       is_passive: isPassive,
     };
 
+    const trimmedBackground = backgroundImage.trim();
+    if (trimmedBackground) payload.background_image = trimmedBackground;
+
     if (isScheduled) {
       if (!startDate) {
         notifications.show({ title: 'Error', message: 'Please select a date and time', color: 'red' });
@@ -141,6 +145,7 @@ export function TaskCreator({ opened, onClose }: Props) {
   const resetForm = () => {
     setName('');
     setDescription('');
+    setBackgroundImage('');
     setPriority('2');
     setIsScheduled(false);
     setStartDate(null);
@@ -181,6 +186,13 @@ export function TaskCreator({ opened, onClose }: Props) {
             value={description}
             onChange={(e) => setDescription(e.currentTarget.value)}
             rows={2}
+          />
+          <TextInput
+            label="Background Image URL"
+            placeholder="https://example.com/image.jpg"
+            description="Optional image shown behind the task on the PiHome screen"
+            value={backgroundImage}
+            onChange={(e) => setBackgroundImage(e.currentTarget.value)}
           />
           <Select
             label="Priority"
