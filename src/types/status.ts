@@ -9,6 +9,20 @@ export interface PiHomeStatus {
   timers: TimerStatus[];
   screens: ScreensStatus;
   tasks: TaskStatus[];
+  text_input?: TextInputStatus;
+}
+
+/** Reports the text field currently focused on the PiHome touchscreen, so the
+ *  phone can offer remote text entry. `active` is false when nothing is focused. */
+export interface TextInputStatus {
+  active: boolean;
+  focus_id: number;
+  hint?: string;
+  /** Current field value, or null when the field is secure (never echoed) */
+  value?: string | null;
+  multiline?: boolean;
+  secure?: boolean;
+  screen?: string;
 }
 
 export interface WallpaperStatus {

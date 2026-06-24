@@ -17,6 +17,7 @@ import {
 } from '@tabler/icons-react';
 import type { TabId } from '../../App.tsx';
 import { usePiHome } from '../../providers/PiHomeProvider.tsx';
+import { RemoteInputSheet } from '../RemoteInput/RemoteInputSheet.tsx';
 
 interface Props {
   activeTab: TabId;
@@ -134,6 +135,9 @@ export function AppShell({ activeTab, onTabChange, children }: Props) {
           })}
         </Group>
       </Box>
+
+      {/* Remote text entry — appears when a field is focused on the device */}
+      <RemoteInputSheet />
     </Box>
   );
 }

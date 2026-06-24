@@ -28,6 +28,11 @@ export function getWsUrl(): string {
   return `ws://${getHost()}:8765`;
 }
 
+/** Dedicated WebSocket URL for live remote text entry (opened on demand). */
+export function getTextWsUrl(): string {
+  return `ws://${getHost()}:8766`;
+}
+
 /** How often to request status over the websocket (ms) */
 export const STATUS_POLL_INTERVAL = 1000;
 
@@ -35,4 +40,4 @@ export const STATUS_POLL_INTERVAL = 1000;
 export const WS_RECONNECT_DELAY = 5000;
 
 /** App version */
-export const APP_VERSION = '3.37.0';
+export const APP_VERSION = '3.40.0';
